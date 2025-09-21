@@ -11,8 +11,9 @@ const stringsXmlTemplate = (appName) => `<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">${appName}</string>
 </resources>`;
+const iosStringsTemplate = (appName) => `"CFBundleDisplayName" = "${appName}";`;
 const withAndroidLocalizedAppName = (config, { localizedAppNames }) => {
-    return (0, config_plugins_1.withDangerousMod)(config, [
+    config = (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
             const androidPath = config.modRequest.projectRoot;
@@ -29,5 +30,25 @@ const withAndroidLocalizedAppName = (config, { localizedAppNames }) => {
             return config;
         }
     ]);
+    config = (0, config_plugins_1.withDangerousMod)(config, [
+        'ios',
+        async (config) => {
+            const iosPath = config.modRequest.projectRoot;
+            const iosProjectName = config.name;
+            const iosProjectDir = path_1.default.join(iosPath, 'ios', iosProjectName);
+            for (const [locale, name] of Object.entries(localizedAppNames)) {
+                const lprojDir = locale === 'default'
+                    ? path_1.default.join(iosProjectDir, 'en.lproj')
+                    : path_1.default.join(iosProjectDir, `${locale}.lproj`);
+                const filePath = path_1.default.join(lprojDir, 'InfoPlist.strings');
+                if (!fs_1.default.existsSync(lprojDir)) {
+                    fs_1.default.mkdirSync(lprojDir, { recursive: true });
+                }
+                fs_1.default.writeFileSync(filePath, iosStringsTemplate(name));
+            }
+            return config;
+        }
+    ]);
+    return config;
 };
 exports.withAndroidLocalizedAppName = withAndroidLocalizedAppName;

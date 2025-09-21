@@ -1,6 +1,6 @@
 {
   "name": "@nabbra/expo-android-app-name-localization",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -8,13 +8,27 @@
     "app.plugin.js"
   ],
   "scripts": {
-    "build": "tsc"
-  },
-  "peerDependencies": {
-    "@expo/config-plugins": "^10.1"
+    "clean": "rm -rf build",
+    "watch": "tsc --watch",
+    "build": "pnpm clean && tsc",
+    "prepare": "husky",
+    "preversion": "pnpm build",
+    "release": "pnpm version prerelease --preid=rc",
+    "postversion": "git push && git push --tags",
+    "publish-npm": "pnpm publish",
+    "prettier:write": "prettier --write -c '**/*.{ts,tsx}'",
+    "prettier:check": "prettier --check -c '**/*.{ts,tsx}'"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
+    "@expo/config-plugins": "^10.1",
     "@types/node": "^24.1.0",
     "typescript": "^5.9"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@9.15.4"
 }
